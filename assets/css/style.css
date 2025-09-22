@@ -293,6 +293,12 @@ input[type=search]::-ms-reveal {
   width: 0;
   height: 0;
 }
+.original-price {
+    font-size: 16px;
+    text-decoration: line-through;
+    color: #dc3545; /* Red for the original price */
+    margin-left: 10px;
+}
 
 input[type=search]::-webkit-search-decoration,
 input[type=search]::-webkit-search-cancel-button,
