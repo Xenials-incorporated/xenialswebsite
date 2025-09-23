@@ -6,11 +6,82 @@
 </head>
 <body style="background: white; margin: 0; padding: 0; height: 100vh; overflow: hidden;">
 
-  <iframe 
-    src="https://atdxperience.com/consult-xenials/" 
+  <iframe id="xenialsIframe"
+    src="https://atdxperience.com/consult-xenials/"
     style="width: 100%; height: 100%; border: none; overflow: auto;"
     scrolling="yes">
   </iframe>
+
+  <script>
+    (function(){
+      const iframe = document.getElementById('xenialsIframe');
+
+      // Helper: try to access iframe document if same-origin
+      function tryAttachDirect() {
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          if (!doc) return false;
+
+          // Attach smooth-scroll inside iframe if possible
+          doc.addEventListener('DOMContentLoaded', () => {
+            doc.querySelectorAll('a[href^="#"]').forEach(anchor => {
+              anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.getAttribute('href').substring(1);
+                const el = doc.getElementById(id);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                  // fallback: set iframe hash (may reload)
+                  iframe.src = iframe.src.split('#')[0] + '#' + id;
+                }
+              });
+            });
+          });
+          return true;
+        } catch (err) {
+          // cross-origin → cannot access iframe DOM
+          return false;
+        }
+      }
+
+      // Attempt immediate attach (works if same-origin and already loaded)
+      if (!tryAttachDirect()) {
+        // If we couldn't attach, try again after iframe loads (maybe same-origin)
+        iframe.addEventListener('load', () => {
+          tryAttachDirect();
+        });
+      }
+
+      // Listen for messages from iframe (recommended approach: iframe sends scroll requests)
+      window.addEventListener('message', (ev) => {
+        // optional: validate origin
+        // if (ev.origin !== 'https://atdxperience.com') return;
+
+        const data = ev.data;
+        if (!data || typeof data !== 'object') return;
+
+        // expected { type: 'scrollTo', id: 'faq' }
+        if (data.type === 'scrollTo' && data.id) {
+          // If same-origin, we could manipulate iframe document directly (already tried)
+          // As a cross-origin fallback we navigate iframe to the hash (this reloads iframe)
+          try {
+            // Try to set iframe.location.hash (works only same-origin)
+            iframe.contentWindow.location.hash = data.id;
+          } catch (err) {
+            // cross-origin: set src with hash (causes reload but jumps to anchor)
+            const base = iframe.src.split('#')[0];
+            iframe.src = base + '#' + data.id;
+          }
+        }
+
+        // optionally handle height messages (if iframe sends its height)
+        if (data.type === 'height' && typeof data.height === 'number') {
+          iframe.style.height = data.height + 'px';
+        }
+      }, false);
+    })();
+  </script>
 
 </body>
 </html>
