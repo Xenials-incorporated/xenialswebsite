@@ -4,27 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Xenials</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden; /* no horizontal scroll */
+    }
+    #xenials-iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;height:100vh;overflow:hidden;">
-
+<body>
   <iframe
     id="xenials-iframe"
     src="https://atdxperience.com/consult-xenials/"
-    title="ATD Xperience — Consultancy content (embedded)"
-    style="width:100%;height:100%;border:0;display:block;"
-    loading="lazy"
-    referrerpolicy="strict-origin-when-cross-origin"
+    title="ATD Xperience Consultancy (embedded)"
+    scrolling="no"
   ></iframe>
 
   <script>
-    // listen for height updates from the child
-    window.addEventListener('message', function (ev) {
-      const allowedOrigin = 'https://atdxperience.com'; // child origin
-      if (ev.origin !== allowedOrigin) return; // security: only accept messages from the WP domain
-      const data = ev.data || {};
-      if (data.type === 'setHeight' && Number.isFinite(data.height)) {
-        const iframe = document.getElementById('xenials-iframe');
-        iframe.style.height = data.height + 'px';
+    // Listen for messages from the iframe
+    window.addEventListener("message", function (ev) {
+      if (ev.origin !== "https://atdxperience.com") return; // security
+      if (ev.data.type === "setHeight") {
+        const iframe = document.getElementById("xenials-iframe");
+        iframe.style.height = ev.data.height + "px";
       }
     });
   </script>
