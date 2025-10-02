@@ -1,47 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" style="height:100%;">
+<html lang="en" style="height: 100%;">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>Xenials</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #fff; /* prevents blue flash */
-      overflow-x: hidden;
-      overflow-y: auto; /* allow parent scroll */
-    }
-    #xenials-iframe {
-      width: 100%;
-      height: 100vh; /* fallback viewport height */
-      border: none;
-      display: block;
-      background: #fff;
-    }
-  </style>
 </head>
-<body>
+<body style="background: white; margin: 0; padding: 0; height: 100vh; overflow: hidden;">
+
   <iframe
-    id="xenials-iframe"
+    name="xenialsIframe"
     src="https://atdxperience.com/consult-xenials/"
-    title="ATD Xperience Consultancy (embedded)"
-    scrolling="no"
+    style="width: 100%; height: 100%; border: none; overflow: auto;"
+    scrolling="yes"
   ></iframe>
 
-  <script>
-    // Listen for messages from atdxperience.com to resize iframe
-    window.addEventListener("message", function (ev) {
-      if (ev.origin !== "https://atdxperience.com") return; // security
-      if (ev.data && ev.data.type === "setHeight") {
-        const iframe = document.getElementById("xenials-iframe");
-        if (ev.data.height && Number(ev.data.height) > 0) {
-          const newH = Math.max(ev.data.height, window.innerHeight);
-          iframe.style.height = newH + "px";
-        }
-      }
-    });
-  </script>
 </body>
 </html>
